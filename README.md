@@ -11,8 +11,6 @@
 
 **Continuous Deployment** extends CI by automatically releasing validated code to a staging or production environment after the pipeline passes. Together, CI/CD creates a fully automated path from code commit to live deployment.
 
-In this assignment we implement the **CI** portion: automatic testing and building on every push to `development`.
-
 ---
 
 ## GitHub Actions Architecture
@@ -35,7 +33,7 @@ Repository
                     └── steps:                 ← Steps (what to do)
                         ├── Checkout code
                         ├── Set up Node.js
-                        ├── npm ci
+                        ├── npm install (npm ci best for prod)
                         ├── npm test
                         └── npm run build
 ```
@@ -48,7 +46,7 @@ Repository
 | **Trigger (`on:`)** | The event that starts the workflow. | `push` to the `development` branch |
 | **Job** | A group of steps that run on the same machine. Multiple jobs can run in parallel. | `build-and-test` |
 | **Step** | A single task within a job. Either a shell command or a reusable action. | `npm run build` |
-| **Runner** | The machine that executes the steps. Can be GitHub-hosted or self-hosted. | Your own computer (self-hosted) |
+| **Runner** | The machine that executes the steps. Can be GitHub-hosted or self-hosted. | My own computer (self-hosted) |
 | **Action** | A pre-built, reusable step from the GitHub Marketplace. | `actions/checkout@v4` |
 
 ---
@@ -112,7 +110,7 @@ jobs:
   build-and-test:
     name: Install → Test → Build
 
-    # KEY LINE: uses your registered self-hosted runner
+    # KEY LINE: uses my registered self-hosted runner
     # Change to 'ubuntu-latest' to use a GitHub-hosted runner instead
     runs-on: self-hosted
 
@@ -137,7 +135,7 @@ jobs:
       #   - It fails if package-lock.json is out of sync
       #   - It deletes node_modules before installing (clean slate)
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # Step 4: Run the test suite
       # --watchAll=false : don't watch for changes, just run once
@@ -170,17 +168,15 @@ jobs:
 
 ## Setting Up the Self-Hosted Runner
 
-Follow these steps on the machine that will be your runner (your laptop, desktop, or server).
-
 ### Step 1 — Open runner settings in GitHub
 
-In your repository:
+In my repository:
 
 ```
 Settings → Actions → Runners → New self-hosted runner
 ```
 
-Select your operating system (Linux recommended).
+Select operating system.
 
 ### Step 2 — Download the runner application
 
@@ -208,9 +204,9 @@ GitHub provides a unique token. Run the configure command:
   --token MY_UNIQUE_TOKEN_FROM_GITHUB
 ```
 
-During setup you'll be asked:
+During setup I was asked:
 - Runner group: press Enter for default
-- Runner name: press Enter to use your machine's hostname
+- Runner name: press Enter to use my machine's hostname
 - Labels: press Enter for default (`self-hosted`)
 - Work folder: press Enter for `_work`
 
@@ -235,25 +231,24 @@ sudo ./svc.sh status
 
 ### Step 5 — Verify it appears in GitHub
 
-Go back to **Settings → Actions → Runners**. Your machine should appear with a green dot and status **Idle**. It is now ready to pick up jobs.
+Go back to **Settings → Actions → Runners**. My machine should appear with a green dot and status **Idle**. It is now ready to pick up jobs.
 
-> ⚠️ **Important:** The runner must be online (service running) whenever you push code. If the runner is offline, the job will queue and wait indefinitely.
+> ⚠️ **Important:** The runner must be online (service running) whenever I push the code. If the runner is offline, the job will queue and wait indefinitely.
 
 ---
 
-## 8. Running the Pipeline
+## Running the Pipeline
 
 ### First-time setup
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
+git clone https://github.com/MY_USERNAME/MY_REPO.git
+cd my_REPO
 
 # 2. Switch to (or create) the development branch
 git checkout -b development
 
-# 3. Make sure the self-hosted runner is running (see section 7)
 
 # 4. Push to trigger the pipeline
 git add .
@@ -275,16 +270,16 @@ git commit -m "chore: trigger CI pipeline"
 git push origin development
 ```
 
-Then go to **Actions** tab in your GitHub repository to watch the run live.
+Then go to **Actions** tab in my GitHub repository to watch the run live.
 
 ---
 
-## 9. Workflow Execution Process
+## Workflow Execution Process
 
-This section explains exactly what happens from the moment you push code to when the pipeline completes.
+This section explains exactly what happens from the moment I push the code to when the pipeline completes.
 
 ```
-You run: git push origin development
+When run: git push origin development
          │
          ▼
 GitHub detects a 'push' event on the 'development' branch
@@ -296,11 +291,11 @@ GitHub reads .github/workflows/ci.yml
 GitHub queues the 'build-and-test' job
          │
          ▼
-Your self-hosted runner (idle, polling GitHub) picks up the job
+My self-hosted runner (idle, polling GitHub) picks up the job
          │
          ▼
 Runner executes steps in order:
-  [1] actions/checkout@v4  →  Downloads your code into the runner workspace
+  [1] actions/checkout@v4  →  Downloads my code into the runner workspace
   [2] actions/setup-node@v4 →  Installs Node.js 20 (or restores from cache)
   [3] npm ci               →  Installs exact dependencies from package-lock.json
   [4] npm test             →  Runs all *.test.js files; fails if any test fails
@@ -322,12 +317,12 @@ GitHub shows result on:
 - The current step exits with a non-zero code (indicating error).
 - All subsequent steps are **skipped** automatically.
 - The job is marked **failed** (red ✗).
-- GitHub can send you an email notification.
+- GitHub can send me an email notification.
 - The detailed error log is available in the Actions tab.
 
 ---
 
-## 10. Debugging Pipeline Failures
+## Debugging Pipeline Failures
 
 ### Where to find logs
 
@@ -350,11 +345,11 @@ The error message and the exact line that failed are always visible in the expan
 
 **Symptom:** The job shows as "Queued" indefinitely in the Actions tab.
 
-**Cause:** Your self-hosted runner is not running.
+**Cause:** my self-hosted runner is not running.
 
 **Fix:**
 ```bash
-# SSH into your runner machine and start the service
+# SSH into my runner machine and start the service
 cd ~/actions-runner
 ./run.sh
 
@@ -369,7 +364,7 @@ sudo ./svc.sh status
 
 **Symptom:**
 ```
-npm ci can only install packages when your package.json and
+npm ci can only install packages when my package.json and
 package-lock.json are in sync.
 ```
 
@@ -397,7 +392,7 @@ src/App.js
   Line 12:  'useState' is not defined
 ```
 
-**Cause:** A syntax error, missing import, or type error in your source code.
+**Cause:** A syntax error, missing import, or type error in my source code.
 
 **Fix:** Read the error message carefully — it shows file name and line number. Fix locally, verify with `npm run build`, then push.
 
@@ -433,69 +428,32 @@ EACCES: permission denied, mkdir '/home/runner/_work/...'
 # Check the runner's workspace permissions
 ls -la ~/actions-runner/_work/
 
-# Fix ownership (replace 'youruser' with your actual username)
-sudo chown -R youruser:youruser ~/actions-runner/_work/
+# Fix ownership (replace 'myuser' with my actual username)
+sudo chown -R myuser:myuser ~/actions-runner/_work/
 ```
 
 > ⚠️ Never run the runner as `root`. It is a security risk.
 
----
-
-### Creating an intentional failure (for the assignment screenshot)
-
-Add this temporary step to your workflow, push it, take the screenshot, then remove it:
-
-```yaml
-- name: Intentional failure — debugging demo
-  run: |
-    echo "This step is about to fail on purpose..."
-    exit 1   # Any non-zero exit code = failure
-```
-
-After screenshotting the failure:
-1. Remove this step from `ci.yml`
-2. Push the fix
-3. Screenshot the successful run
-
----
-
-## 11. Screenshots Guide
-
-You need two screenshots for submission:
 
 ### Screenshot A — Successful pipeline run
-
-1. Push your code to the `development` branch.
-2. Go to **Actions** tab → click the latest run.
-3. Expand the job and all steps.
-4. Screenshot showing all steps with green ✅ checkmarks.
-
-What to capture:
-- The workflow name and run number at the top
-- All six steps expanded and green
-- The final step output showing `build/` directory listing
+Successfull Pipeline | `images/succ_1.png`
+![Screenshot](images/succ_1.png)
 
 ### Screenshot B — Failed pipeline with debug logs
 
-1. Add the intentional failure step (see section 10 above).
-2. Push to `development`.
-3. Go to **Actions** tab → click the failed run.
-4. Click the failed step to expand it.
-5. Screenshot showing the red ✗ icon and the error message in the log.
 
-What to capture:
-- The red ✗ icon on the failed step
-- The actual error text in the log panel
-- The "skipped" steps after the failure point
+Failed Pipeline | `images/err_1.png`
+![Screenshot](images/err_1.png)
 
----
+Failed Pipeline With Log | `images/err_2.png`
+![Screenshot](images/err_2.png)
 
 ## Quick Reference Commands
 
 ```bash
 # Clone and set up
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
+git clone https://github.com/MY_USERNAME/MY_REPO.git
+cd MY_REPO
 git checkout -b development
 
 # Install dependencies locally
@@ -509,7 +467,7 @@ npm run build
 
 # Push to trigger CI pipeline
 git add .
-git commit -m "your message"
+git commit -m "my message"
 git push origin development
 
 # Start self-hosted runner (one-time)
