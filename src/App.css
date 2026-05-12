@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 1.5vmin);
+  color: white;
+  padding: 2rem;
+}
+
+.App-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.App-header p {
+  color: #a0aec0;
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+.App-header strong {
+  color: #63b3ed;
+}
+
+.pipeline-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2.5rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.pipeline-info h2 {
+  color: #63b3ed;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.pipeline-info ol {
+  line-height: 2;
+  color: #e2e8f0;
+}
+
+.branch-info {
+  font-size: 0.95rem;
+}
+
+.branch-info code {
+  background: rgba(99, 179, 237, 0.2);
+  color: #63b3ed;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
